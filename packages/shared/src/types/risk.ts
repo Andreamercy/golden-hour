@@ -1,36 +1,25 @@
-import type { VitalSigns } from './vitals';
-
-// ─── Risk Band ────────────────────────────────────────────────────────────────
 export type RiskBand = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
 
-// ─── NEWS2 Score ──────────────────────────────────────────────────────────────
 export interface NEWS2Score {
   totalScore: number;
   band: RiskBand;
-  /** Individual score contribution for each parameter */
-  individualScores: Partial<Record<keyof VitalSigns, number>>;
-  /** List of parameter names that are outside normal range */
+  individualScores: Partial<Record<string, number>>;
   triggeredParameters: string[];
-  /** Pre-authored clinical response instruction */
   clinicalResponse: string;
   timestamp: string;
-}
-
-// ─── MEOWS Score ──────────────────────────────────────────────────────────────
-export type MEOWSColor = 'GREEN' | 'AMBER' | 'RED';
-
-export interface MEOWSParameterResult {
-  parameter: string;
-  value: number | string;
-  color: MEOWSColor;
-  score: number;
+  scoreType?: 'NEWS2';
 }
 
 export interface MEOWSScore {
+  totalScore: number;
   band: RiskBand;
-  triggeredParameters: MEOWSParameterResult[];
-  redCount: number;
-  amberCount: number;
+  parameterColors: Record<string, string>;
+  triggeredParameters: string[];
   clinicalResponse: string;
   timestamp: string;
+  scoreType: 'MEOWS';
+}
+
+export function isMEOWS(score: NEWS2Score | MEOWSScore): score is MEOWSScore {
+  return score.scoreType === 'MEOWS';
 }
